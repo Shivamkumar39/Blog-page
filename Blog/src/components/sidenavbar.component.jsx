@@ -5,7 +5,7 @@ import { UserContext } from '../App'
 const SideNav = () => {
 
 
-    let {userAuth: { access_token }} = useContext(UserContext)
+    let {userAuth: { access_token, new_notification_available }} = useContext(UserContext)
     const location = useLocation();
     const page = location.pathname.split('/')[2];
 
@@ -69,6 +69,9 @@ const SideNav = () => {
 
                 <NavLink to='/dashboard/notifications' onClick={(e) => setpageState(e.target.innerText)} className='sidebar-link'>
                 <i className="fi fi-rr-bell"></i>
+                {
+                      new_notification_available ? <span className='bg-red w-3 h-3 rounded-full absolute  z-10 top-2 right-2'></span> : ""
+                    }
                  Notification
                 </NavLink>
 
