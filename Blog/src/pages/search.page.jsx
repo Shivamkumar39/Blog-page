@@ -7,7 +7,7 @@ import BlogPostCard from '../components/blog-post.component'
 import LoadMoreDataBtn from '../components/load-more.component'
 import NodataMessage from '../components/nodata.component'
 import axios from 'axios'
-import filterPageDataa from '../common/filter-pagination-data'
+import {filterPageDataa }from '../common/filter-pagination-data'
 import UserCard from '../components/usercard.component'
 
 

@@ -628,20 +628,88 @@ server.post('/isliked-by-user', verifyJWT, (req, res) =>{
 })
 
 
-server.get('/notification', verifyJWT, (req, res)=>{
+server.get('/new-notification', verifyJWT, (req, res)=>{
     let user_id = req.user
     Notification.exists({ notification_for: user_id, seen: false, user: {$ne: user_id}})
-    .the(result =>{
+    .then(result =>{
         if(result){
             return res.status(200).json({new_notification_available: true})
         }else{
-            return res.status(500).json({new_notification_available: false})
+            return res.status(200).json({new_notification_available: false})
         }
     }).catch(err =>{
         console.log(err.message)
         return res.status(500).json({error: err.message})
     })
 })
+
+
+
+
+//manage blog page
+server.post('/user-written-blog', verifyJWT, (req, res) =>{
+
+    let user_id = req.user
+
+    let { page, draft, query, deletedDocCount} = req.body
+    
+    let maxLimit = 5
+    let skipDocs = (page-1) * maxLimit
+
+    if(deletedDocCount){
+        skipDocs -= deletedDocCount
+
+    }
+    Blog.find({ author: user_id, draft, title: new RegExp(query, 'i')})
+    .skip(skipDocs)
+    .limit(maxLimit)
+    .sort({publishedAt: -1})
+    .select(" title  publishedAt blog_id activity des draft -_id")
+    .then(blogs =>{
+        return res.status(200).json({ blogs })
+    })
+    .catch(err =>{
+        return res.status(500).json({error: err.message})
+    })
+})
+
+server.post('/user-written-blogs-count', verifyJWT, (req, res) =>{
+
+    let user_id = req.user
+
+    let { draft, query} = req.body
+    
+
+    Blog.countDocuments({ author: user_id, draft, title: new RegExp(query, 'i')})
+    .then(count =>{
+        return res.status(200).json({ totalDocs: count })
+    })
+    .catch(err =>{
+        console.log(err.message);
+        return res.status(500).json({ error: err.message })
+    })
+
+})
+
+
+server.post('/delete-blog', verifyJWT, (req, res)=>{
+    let user_id = req.user
+    let { blog_id} = req.body
+    Blog.findOneAndDelete({blog_id})
+    .then(blog =>{
+        Notification.deleteMany({blog: blog_id}).then(data => console.log('notifications deleted'));
+        //Comment.deleteMany({blog_id: blog_id}).then(data => console.log('comment deleted'));
+
+        User.findOneAndUpdate({ _id: user_id}, {$pull: {blog:blog._id}, $inc: {'account_info.total_posts': -1}})
+        .then(user =>console.log('Blog deleted'))
+        return res.status(200).json({error: 'done'})  
+
+    }).catch(err =>{
+        return res.status(500).json({ error: err.message})
+    })
+})
+
+
 server.listen(PORT, ()=>{
     console.log('lising on port no -> ' + PORT)
 }) 

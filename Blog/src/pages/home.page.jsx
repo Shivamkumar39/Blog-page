@@ -7,7 +7,7 @@ import BlogPostCard from '../components/blog-post.component'
 import MinimalBlogPost from '../components/nobanner-blog-post.component'
 import { activeTabRef } from '../components/inpage-navigation.component'
 import NodataMessage from '../components/nodata.component'
-import filterPageDataa from '../common/filter-pagination-data'
+import {filterPageDataa} from '../common/filter-pagination-data'
 import LoadMoreDataBtn from '../components/load-more.component'
 
 const Homepage = () => {
