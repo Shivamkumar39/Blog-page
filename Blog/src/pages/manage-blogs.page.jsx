@@ -8,19 +8,22 @@ import NodataMessage from '../components/nodata.component'
 import AnimationWrapper from '../common/page-animation'
 import ManagedPublishedBlog, { ManageDraftBlogPost } from '../components/manage-blogcard.component'
 import { filterPageDataa } from '../common/filter-pagination-data'
+import LoadMoreDataBtn from '../components/load-more.component'
+import { useSearchParams } from 'react-router-dom'
 
 const ManageBlog = () => {
 
   const [blogs, setBlogs] = useState(null)
   const [drafts, setDrafts] = useState(null)
   const [query, setQuery] = useState('')
+  let activeTab = useSearchParams()[0].get('tab')
 
   let { userAuth: { access_token } } = useContext(UserContext)
 
-  const getBlogs = ({ page, draft, deletedDocCount = 0 }) => {
+  const getBlogs = ({ page, draft, deleteDocCount = 0 }) => {
 
     axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/user-written-blog', {
-      page, draft, query, deletedDocCount
+      page, draft, query, deleteDocCount
     }, {
       headers: {
         'Authorization': `Bearer ${access_token}`
@@ -95,7 +98,7 @@ const ManageBlog = () => {
 
       </div>
 
-      <InPageNavigation routes={['published Blogs', 'Drafts']}>
+      <InPageNavigation routes={['published Blogs', 'Drafts']} defaultActiveIndex={activeTab != 'draft' ? 0 : "1"}>
         { // published blog
 
           blogs == null ? (<Loader />) :
@@ -110,6 +113,8 @@ const ManageBlog = () => {
                     </AnimationWrapper>
                   })
                 }
+
+                <LoadMoreDataBtn state={blogs} fetchDataFun={getBlogs} additionalParam={{draft: false, deleteDocCount: blogs.deleteDocCount}}  />
               </>
               : <NodataMessage message='no published blogs' />
 
@@ -126,11 +131,13 @@ const ManageBlog = () => {
                   drafts.results.map((blog, i) => {
                     return <AnimationWrapper key={i} transition={{ delay: i * 0.4 }}>
 
-                      <ManageDraftBlogPost blog={{...blog, index: i, setStateFun: setDrafts}} />
+                      <ManageDraftBlogPost blog={{...blog, index: i, setStateFunc: setDrafts}} />
 
                     </AnimationWrapper>
                   })
                 }
+                <LoadMoreDataBtn state={drafts} fetchDataFun={getBlogs} additionalParam={{draft: true, deleteDocCount: drafts.deleteDocCount}}  />
+
               </>
               : <NodataMessage message='no published blogs' />
 

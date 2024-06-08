@@ -1,10 +1,9 @@
 import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getDay } from '../common/date'
-import { revokeAccessToken } from 'firebase/auth'
 import { UserContext } from '../App'
 import axios from 'axios'
-import Tag from './tags.component'
+
 
 const BlogStatus = ({ stats }) => {
 
@@ -104,11 +103,10 @@ const deleteBlog = (blog, access_token, target) => {
                 return null
             }
             return { ...preVal, totalDocs: totalDocs - 1, deleteDocCount: deleteDocCount + 1 }
-        }).catch(err => {
-                console.log(err);
-            })
-    }
-    )
+        })
+    }).catch(err => {
+        console.log(err);
+    })
 }
 
 

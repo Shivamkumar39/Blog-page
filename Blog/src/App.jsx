@@ -13,21 +13,37 @@ import SideNav from "./components/sidenavbar.component";
 import ChangePassword from "./pages/change-password.page";
 import EditProfile from "./pages/edit-profile.page";
 import ManageBlog from "./pages/manage-blogs.page";
+import Notification from "./components/notification-card.component";
 
 export const UserContext = createContext({})
-
+export const ThemeContext = createContext({})
 const App = () => {
 
     const [userAuth, setUserAuth] = useState({});
     
+    const [theme, setTheme] = useState('light')
     useEffect(() =>{
         let userInSession = lookInSession("user")
+        let themeInSession = lookInSession('theme')
         userInSession ? setUserAuth(JSON.parse(userInSession)) : setUserAuth({access_token: null})
+
+
+        if(themeInSession){
+            setTheme(()=>{
+                document.body.setAttribute('data-theme', themeInSession)
+
+                return themeInSession
+            })
+        }else{
+            document.body.setAttribute('data-theme', theme)
+        }
     }, [])
 
 
     return (
-        <UserContext.Provider value={{userAuth, setUserAuth}}>
+
+        <ThemeContext.Provider value={{theme, setTheme}}>
+             <UserContext.Provider value={{userAuth, setUserAuth}}>
         <Routes>
         <Route path="/editor"  element={<Editor/>} />
         <Route path="/editor/:blog_id"  element={<Editor/>} />
@@ -35,6 +51,8 @@ const App = () => {
                 <Route index element={<Homepage/>}/>
                 <Route path="dashboard" element={<SideNav/>}>
                     <Route path="blogs" element={<ManageBlog/>}/>
+                    <Route path="notifications" element={<Notification/>}/>
+
                 </Route>
                 <Route path="settings" element={<SideNav />}>
                     <Route path="edit-profile" element={<EditProfile/>}/>
@@ -49,6 +67,8 @@ const App = () => {
             </Route>
         </Routes>
         </UserContext.Provider >
+        </ThemeContext.Provider>
+       
     )
 }
 

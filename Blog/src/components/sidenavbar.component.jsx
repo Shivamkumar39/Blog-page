@@ -78,7 +78,7 @@ const SideNav = () => {
                 Notification
               </NavLink>
 
-              <NavLink to='/dashboard/write' onClick={(e) => setpageState(e.target.innerText)} className='sidebar-link'>
+              <NavLink to='/editor' onClick={(e) => setpageState(e.target.innerText)} className='sidebar-link'>
                 <i className="fi fi-rr-edit"></i>
                 Write
               </NavLink>

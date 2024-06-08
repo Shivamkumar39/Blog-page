@@ -140,7 +140,7 @@ const BlogEditor = () => {
                     toast.success("published 👍")
 
                     setTimeout(() => {
-                        navigate("/")
+                        navigate("/dashboard/blogs?tab=draft")
                     }, 1000);
                 })
                     .catch((error) => {

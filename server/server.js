@@ -79,6 +79,7 @@ const verifyJWT = (req, res, next) => {
             return res.status(403).json({error: "acces token is invalid"})
         }
         req.user = user.id
+        req.admin = user.admin
         next()
     })
 }
@@ -86,12 +87,13 @@ const verifyJWT = (req, res, next) => {
 
 const formatDataSend = (user) =>{
 
-    const access_token = jwt.sign({id: user._id}, process.env.SECRET_ACCESS_KEY)
+    const access_token = jwt.sign({id: user._id, admin: user.admin}, process.env.SECRET_ACCESS_KEY)
     return{
         access_token,
         profile_img: user.personal_info.profile_img,
         username: user.personal_info.username,
-        fullname: user.personal_info.fullname
+        fullname: user.personal_info.fullname,
+        isAdmin: user.admin
     }
 }
 
@@ -651,13 +653,13 @@ server.post('/user-written-blog', verifyJWT, (req, res) =>{
 
     let user_id = req.user
 
-    let { page, draft, query, deletedDocCount} = req.body
+    let { page, draft, query, deleteDocCount} = req.body
     
     let maxLimit = 5
     let skipDocs = (page-1) * maxLimit
 
-    if(deletedDocCount){
-        skipDocs -= deletedDocCount
+    if(deleteDocCount){
+        skipDocs -= deleteDocCount
 
     }
     Blog.find({ author: user_id, draft, title: new RegExp(query, 'i')})
@@ -697,7 +699,7 @@ server.post('/delete-blog', verifyJWT, (req, res)=>{
     let { blog_id} = req.body
     Blog.findOneAndDelete({blog_id})
     .then(blog =>{
-        Notification.deleteMany({blog: blog_id}).then(data => console.log('notifications deleted'));
+       // Notification.deleteMany({blog: blog_id}).then(data => console.log('notifications deleted'));
         //Comment.deleteMany({blog_id: blog_id}).then(data => console.log('comment deleted'));
 
         User.findOneAndUpdate({ _id: user_id}, {$pull: {blog:blog._id}, $inc: {'account_info.total_posts': -1}})
