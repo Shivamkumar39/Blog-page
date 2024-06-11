@@ -19,6 +19,8 @@ const UserAuthForm = ({ type }) => {
         axios.post('http://localhost:6500' + serverRoute, formData)
         .then(({ data }) => {
             storeInsession("user", JSON.stringify(data))
+
+            console.log(data);
             setUserAuth(data)
             
         }).catch(({response})=>{

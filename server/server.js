@@ -34,8 +34,8 @@ let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for pass
 
 server.use(express.json())
 server.use(cors())
-
-mongoose.connect("mongodb://127.0.0.1:27017/Blogging", {
+//mongodb+srv://shivamkumar098798:dYAPQ3FWQydd1JSX@blog.0d9rbkn.mongodb.net/?retryWrites=true&w=majority&appName=Blog
+mongoose.connect("mongodb+srv://shivamkumar098798:dYAPQ3FWQydd1JSX@blog.0d9rbkn.mongodb.net/?retryWrites=true&w=majority&appName=Blog", {
     autoIndex: true
 }).then(()=>{
     console.log("db is connected")
@@ -323,7 +323,7 @@ server.post("/search-blogs-count", (req, res) =>{
     if(tag){
         findQuery = {tags: tag, draft: false}
     }else if(query){
-        findQuery = {draft: false, title: new RegExp( query, 'i' ), des: new RegExp( query, 'i' )}
+        findQuery = {draft: false, title: new RegExp( query, 'i' )}
     }
     
 
@@ -377,7 +377,7 @@ server.post('/search-blogs', (req, res) =>{
     if(tag){
         findQuery = {tags: tag, draft: false, blog_id: {$ne: eliminate_blog}}
     }else if(query){
-        findQuery = {draft: false, title: new RegExp( query, 'i' ), des: new RegExp( query, 'i' )}
+        findQuery = {draft: false, title: new RegExp( query, 'i' )}
     }else if(author){
         findQuery = {author, draft: false}
     }
@@ -483,6 +483,11 @@ server.post('/update-profile', verifyJWT, (req, res) => {
 server.post('/create-blog', verifyJWT, (req, res) =>{
 
     let authorId = req.user
+    let isAdmin = req.admin
+
+
+    if(isAdmin){
+
     let { title, des, tags, content, draft, id} = req.body
 
 
@@ -552,6 +557,11 @@ server.post('/create-blog', verifyJWT, (req, res) =>{
      }             
 
 
+
+    }else{
+        return res.status(500).json({error: 'you do not have permissions to create any blogs '})
+    }
+    
 
 
 })
@@ -697,18 +707,25 @@ server.post('/user-written-blogs-count', verifyJWT, (req, res) =>{
 server.post('/delete-blog', verifyJWT, (req, res)=>{
     let user_id = req.user
     let { blog_id} = req.body
-    Blog.findOneAndDelete({blog_id})
-    .then(blog =>{
-       // Notification.deleteMany({blog: blog_id}).then(data => console.log('notifications deleted'));
-        //Comment.deleteMany({blog_id: blog_id}).then(data => console.log('comment deleted'));
+    let isAdmin = req.admin
 
-        User.findOneAndUpdate({ _id: user_id}, {$pull: {blog:blog._id}, $inc: {'account_info.total_posts': -1}})
-        .then(user =>console.log('Blog deleted'))
-        return res.status(200).json({error: 'done'})  
-
-    }).catch(err =>{
-        return res.status(500).json({ error: err.message})
-    })
+    if(isAdmin){
+        Blog.findOneAndDelete({blog_id})
+        .then(blog =>{
+           // Notification.deleteMany({blog: blog_id}).then(data => console.log('notifications deleted'));
+            //Comment.deleteMany({blog_id: blog_id}).then(data => console.log('comment deleted'));
+    
+            User.findOneAndUpdate({ _id: user_id}, {$pull: {blog:blog._id}, $inc: {'account_info.total_posts': -1}})
+            .then(user =>console.log('Blog deleted'))
+            return res.status(200).json({error: 'done'})  
+    
+        }).catch(err =>{
+            return res.status(500).json({ error: err.message})
+        })
+    }else{
+        return res.status(500).json({error: 'you do not have permissions to delete any blogs '})
+    }
+  
 })
 
 

@@ -1,13 +1,16 @@
 import{ Link } from 'react-router-dom'
 import { UserContext } from '../App'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import AnimationWrapper from '../common/page-animation'
 import { removeFromSession } from '../common/session'
 //import { useState } from 'react'
 
 const UserNavigationPanel = () =>{
 
-    const{userAuth: { username }, setUserAuth } = useContext(UserContext)
+    const{userAuth: { username, isAdmin }, setUserAuth } = useContext(UserContext)
+    
+
+    
     
 
     const signOutUser = () => {
@@ -22,9 +25,12 @@ const UserNavigationPanel = () =>{
 
         >
        <div  className="bg-white absolute right-0 border border-grey w-60 duration-200">
-          <Link to='editor' className='flex gap-2 link md:hidden pl-8 py-4'><i className="fi fi-rr-edit"></i>
+          {
+            isAdmin ? 
+            <Link to='editor' className='flex gap-2 link md:hidden pl-8 py-4'><i className="fi fi-rr-edit"></i>
                 <p>Write</p>
-          </Link>
+          </Link> : ""
+          }
 
           <Link to={`/user/${username}`} className='link pl-8 py-4'>
             profile

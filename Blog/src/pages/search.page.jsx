@@ -30,6 +30,7 @@ const SearchPage = () => {
           create_new_arr
           
       })
+      console.log(data);
       setBlog(formateData)
 
   }).catch(err => {

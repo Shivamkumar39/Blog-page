@@ -17,7 +17,7 @@ const Navbar = () => {
 
   let { theme, setTheme } = useContext(ThemeContext)
 
-  const { userAuth, userAuth: { access_token, profile_img, new_notification_available }, setUserAuth } = useContext(UserContext);
+  const { userAuth, userAuth: { access_token, profile_img, new_notification_available, isAdmin }, setUserAuth } = useContext(UserContext);
 
   useEffect(() => {
     if (access_token) {
@@ -92,10 +92,13 @@ const Navbar = () => {
           </button>
 
           {/* //editer       */}
+         {
+          isAdmin ?
           <Link to='/editor' className='hidden md:flex gap-2 link'>
-            <i className="fi fi-rr-edit"></i>
-            <p>Write</p>
-          </Link>
+          <i className="fi fi-rr-edit"></i>
+          <p>Write</p>
+        </Link> : ""
+         }
 
           <button className='w-12 h-12 rounded-full bg-grey relative hover:bg-black/10' onClick={changeTheme}>
           <i className="fi fi-rs-moon-stars"></i>

@@ -5,6 +5,7 @@ import BlogEditor from '../components/blog-editor.component'
 import PublishForm from '../components/publish-form.component'
 import Loader from '../components/loader.component'
 import axios from 'axios'
+import PageNotFound from './404.page'
 
 
 const blogStructure = {
@@ -29,7 +30,7 @@ const Editor = () => {
   const [editorState, setEditerState] = useState('editor')
   const [textEditor, setTextEditor] = useState({ isReady: false })
 
-  let { userAuth: { access_token } } = useContext(UserContext)
+  let { userAuth: { access_token, isAdmin } } = useContext(UserContext)
   let [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -58,6 +59,8 @@ const Editor = () => {
   return (
     <EditerContext.Provider value={{ blog, setBlog, editorState, setEditerState, textEditor, setTextEditor }}>
       {
+        !isAdmin ? 
+        <Navigate to='/404'/> : 
         access_token === null ? <Navigate to='/signin' />
           :
           loading ? <Loader /> :
