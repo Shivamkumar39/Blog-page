@@ -19,7 +19,7 @@ import User from './Schema/User.js'
 import Blog from './Schema/Blog.js'
 import Notification from './Schema/Notification.js'
 const server = express()
-let PORT = 6500
+let PORT = 7080
 
 
 admin.initializeApp({
