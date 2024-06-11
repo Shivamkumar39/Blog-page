@@ -15,8 +15,8 @@ const UserAuthForm = ({ type }) => {
     let {userAuth: {access_token}, setUserAuth} = useContext(UserContext)
 
     const UserAuthThroughServer = (serverRoute, formData) => {
-
-        axios.post('http://localhost:6500' + serverRoute, formData)
+//localhost
+        axios.post('https://blog-page-rp71.onrender.com' + serverRoute, formData)
         .then(({ data }) => {
             storeInsession("user", JSON.stringify(data))
 

@@ -128,7 +128,7 @@ const BlogEditor = () => {
                     title, tags, des, content, draft: true
                 }
                 //let createblog = '/create-blog'
-                axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/create-blog', { ...blogObj, id: blog_id }, { //'http://localhost:6500'
+                axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/create-blog', { ...blogObj, id: blog_id }, { //'https://blog-page-rp71.onrender.com'
                     headers: {
                         'Authorization': `Bearer ${access_token}`
 
